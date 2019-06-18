@@ -3,6 +3,7 @@ package concert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.StandardOutputStreamLog;
+import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,14 +15,24 @@ import static org.junit.Assert.assertEquals;
 @ContextConfiguration(classes = ConcertConfig.class)
 public class EncoreableTest {
     @Rule
-    public final StandardOutputStreamLog log = new StandardOutputStreamLog();
+    public final SystemOutRule systemOutRule = new SystemOutRule().enableLog();
 
     @Autowired
-    private Encoreable performance;
+    private Performance performance;
+
+    @Test
+    public void testPerformanceEncoreable() {
+        Encoreable encoreable = (Encoreable) performance;
+        encoreable.performEncore();
+        assertEquals("Default encoreable\n", systemOutRule.getLogWithNormalizedLineSeparator());
+    }
 
     @Test
     public void testPerformance() {
-        performance.performEncore();
-        assertEquals("Default encoreable\n", log.getLog());
+        performance.perform();
+        assertEquals("Silencing cell phones\n" +
+                "Taking seats\n" +
+                "Piano Solo\n" +
+                "CLAP CLAP CLAP!!!\n", systemOutRule.getLogWithNormalizedLineSeparator());
     }
 }
